@@ -20,7 +20,7 @@ int main(int argc, char** argv){
 
   voc.read(input, minFreq);
 
-  for (int i = 0; i < 0; ++i){
+  for (int i = 0; i < iteration; ++i){
     printf("Iteration %2d\n", i+1);
     voc.train(input, learningRate, numNegative);
     voc.save(output+".bin");
