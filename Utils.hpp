@@ -10,14 +10,6 @@ namespace Utils{
   inline void infNan(const double& x){
     assert(!isnan(x) && !isinf(x));
   }
-  
-  inline double uniformRandom(){
-    static int x = 0;
-    static const int a = 1103515245, b = 12345, c = 2147483647;
-    
-    x = (a*x + b)&c;
-    return ((double)x+1.0) / ((double)c+2.0);
-  }
 
   inline unsigned long xor128(){
     static unsigned long x = 123456789, y = 362436069, z = 521288629, w = 88675123; 
@@ -26,6 +18,10 @@ namespace Utils{
     t=(x^(x<<11));
     x=y; y=z; z=w;
     return (w=(w^(w>>19))^(t^(t>>8)));
+  }
+
+  inline double uniformRandom(){
+    return (Utils::xor128()&0xFFFF)/65536.0;
   }
   
   inline double cosDis(const MatD& a, const MatD& b){
