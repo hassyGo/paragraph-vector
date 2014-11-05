@@ -1,7 +1,8 @@
 paragraph-vector
 ================
 
-paragraph vector trained by negative sampling
+paragraph vector trained by negative sampling<br>
+This project requires a template library for linear algebra: Eigen (http://eigen.tuxfamily.org/index.php?title=Main_Page).
 
 Reference
 
