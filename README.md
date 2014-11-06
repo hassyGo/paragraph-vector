@@ -4,7 +4,7 @@ paragraph-vector
 paragraph vector trained by negative sampling<br>
 This project requires a template library for linear algebra: Eigen (http://eigen.tuxfamily.org/index.php?title=Main_Page).
 
-*USAGE*
+*USAGE*<br>
 1) modify a line in the Makefile to use Eigen
 EIGEN_LOCATION=$$HOME/local/eigen #Change this line
 
