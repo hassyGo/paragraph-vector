@@ -1,7 +1,7 @@
 CXX=g++
 
 EIGEN_LOCATION=$$HOME/local/eigen #Change this line
-BUILD_DIR=./
+BUILD_DIR=.
 
 CXXFLAGS =-Wall
 CXXFLAGS+=-O3
