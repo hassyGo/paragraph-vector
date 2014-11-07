@@ -84,7 +84,7 @@ void Vocabulary::read(const std::string& documentFile, COUNT freqThreshold){
   this->nullIndex = this->unkIndex+1;
   this->wordList.push_back("**UNK**");
   this->wordList.push_back("**NULL**");
-  this->wordVector = MatD::Random(this->wordVecDim, this->wordList.size()+2)*sqrt(6.0/(this->wordVecDim*2+1.0));
+  this->wordVector = MatD::Random(this->wordVecDim, this->wordList.size())*sqrt(6.0/(this->wordVecDim*2+1.0));
   this->paragraphVector = MatD::Random(this->paragraphVecDim, paragraphIndex)*sqrt(6.0/(this->paragraphVecDim*2+1.0));
   this->wordScoreVector = MatD::Zero(this->wordScoreVecDim, this->wordList.size());
 
