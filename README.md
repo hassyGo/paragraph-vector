@@ -2,9 +2,11 @@ paragraph-vector
 ================
 
 paragraph vector trained by negative sampling<br>
-This project requires a template library for linear algebra: Eigen (http://eigen.tuxfamily.org/index.php?title=Main_Page).
+This project requires a template library for linear algebra: Eigen (http://eigen.tuxfamily.org/index.php?title=Main_Page)
 
 An online demo is available at: http://www.logos.t.u-tokyo.ac.jp/~hassy/implementations/paragraph_vector/
+
+Run the demo script "sample.sh" to see how to use the program
 
 *USAGE*<br>
 1) modify a line in the Makefile to use Eigen<br>
