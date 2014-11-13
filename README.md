@@ -6,8 +6,11 @@ This project requires a template library for linear algebra: Eigen (http://eigen
 
 An online demo is available at: http://www.logos.t.u-tokyo.ac.jp/~hassy/implementations/paragraph_vector/
 
+*ToDo*<br>
+decrease the learning rate appropriately (currently, the learning rate is fixed)
+
 *USAGE*<br>
-1) modify a line in the Makefile to use Eigen<br>
+1) modify the line in Makefile to use Eigen<br>
 EIGEN_LOCATION=$$HOME/local/eigen #Change this line
 
 2) run the command "make" or run the script "sample.sh"
