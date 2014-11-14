@@ -16,7 +16,8 @@ EIGEN_LOCATION=$$HOME/local/eigen #Change this line
 2) run the command "make" or run the script "sample.sh"
 
 3) train a model using your corpus which should have a paragraph (or document, sentence) in each line<br>
-./paragraph_vector -input input.txt -output result
+./paragraph_vector -input input.txt -output result<br>
+(see Utils.hpp for other options)
 
 4) use the resulting files for your purpose<br>
 result.bin<br>
