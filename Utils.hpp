@@ -33,41 +33,63 @@ namespace Utils{
   }
 
   inline void procArg(int argc, char** argv, int& wordVecDim, int& paragraphVecDim, int& contextSize, double& learningRate, int& numNegative, int& minFreq, int& iteration, std::string& input, std::string& output){
-    for (int i = 1; i < argc-1; i+=2){
+    for (int i = 1; i < argc; i+=2){
       std::string arg = (std::string)argv[i];
 
-      if (arg == "-wvdim"){
+      if (arg == "-help"){
+	printf("### Options ###\n");
+	printf("-wvdim    the dimensionality of word vectors (default: 50)\n");
+	printf("-pvdim    the dimensionality of paragraph vectors (default: 50)\n");
+	printf("-window   the context window size (default: 5)\n");
+	printf("-lr       the learning rate (default: 0.025)\n");
+	printf("-neg      the number of negative samples for negative sampling learning (default: 5)\n");
+	printf("-minfreq  the threshold to cut rare words (default: 10)\n");
+	printf("-itr      the number of iterations (default: 1)\n");
+	printf("-input    the input file name (default: INPUT.txt)\n");
+	printf("-output   the output file name (default: OUTPUT)\n");
+	exit(1);
+      }
+      else if (arg == "-wvdim"){
+	assert(i+1 < argc);
 	wordVecDim = atoi(argv[i+1]);
 	assert(wordVecDim > 0);
       }
       else if (arg == "-pvdim"){
+	assert(i+1 < argc);
 	paragraphVecDim = atoi(argv[i+1]);
 	assert(paragraphVecDim > 0);
       }
       else if (arg == "-window"){
+	assert(i+1 < argc);
 	contextSize = atoi(argv[i+1]);
 	assert(contextSize > 0);
       }
       else if (arg == "-lr"){
+	assert(i+1 < argc);
 	learningRate = atof(argv[i+1]);
 	assert(learningRate > 0.0);
       }
       else if (arg == "-neg"){
+	assert(i+1 < argc);
 	numNegative = atoi(argv[i+1]);
 	assert(numNegative > 0);
       }
       else if (arg == "-minfreq"){
+	assert(i+1 < argc);
 	minFreq = atoi(argv[i+1]);
 	assert(minFreq > 0);
       }
       else if (arg == "-itr"){
+	assert(i+1 < argc);
 	iteration = atoi(argv[i+1]);
 	assert(minFreq > 0);
       }
       else if (arg == "-input"){
+	assert(i+1 < argc);
 	input = (std::string)argv[i+1];
       }
       else if (arg == "-output"){
+	assert(i+1 < argc);
 	output = (std::string)argv[i+1];
       }
     }
