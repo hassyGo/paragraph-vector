@@ -7,7 +7,10 @@ This project requires a template library for linear algebra: Eigen (http://eigen
 An online demo is available at: http://www.logos.t.u-tokyo.ac.jp/~hassy/implementations/paragraph_vector/
 
 *ToDo*<br>
-decrease the learning rate appropriately (currently, the learning rate is fixed)
+<ul>
+<li>decrease the learning rate appropriately (currently, the learning rate is fixed)
+<li>speedup the code
+</ul>
 
 *USAGE*<br>
 1) modify the line in Makefile to use Eigen<br>
