@@ -238,64 +238,20 @@ void Vocabulary::outputWordVector(const std::string& fileName){
 
 void Vocabulary::save(const std::string& fileName){
   std::ofstream ofs(fileName.c_str(), std::ios::out|std::ios::binary);
-  double val = 0.0;
 
   assert(ofs);
-
-  for (int i = 0; i < this->wordVector.cols(); ++i){
-    for (int j = 0; j < this->wordVector.rows(); ++j){
-      val = this->wordVector.coeff(j, i);
-      Utils::infNan(val);
-      ofs.write((char*)&val, sizeof(double));
-    }
-  }
-
-  for (int i = 0; i < this->paragraphVector.cols(); ++i){
-    for (int j = 0; j < this->paragraphVector.rows(); ++j){
-      val = this->paragraphVector.coeff(j, i);
-      Utils::infNan(val);
-      ofs.write((char*)&val, sizeof(double));
-    }
-  }
-
-  for (int i = 0; i < this->wordScoreVector.cols(); ++i){
-    for (int j = 0; j < this->wordScoreVector.rows(); ++j){
-      val = this->wordScoreVector.coeff(j, i);
-      Utils::infNan(val);
-      ofs.write((char*)&val, sizeof(double));
-    }
-  }
+  Utils::save(ofs, this->wordVector);
+  Utils::save(ofs, this->paragraphVector);
+  Utils::save(ofs, this->wordScoreVector);
 }
 
 void Vocabulary::load(const std::string& fileName){
   std::ifstream ifs(fileName.c_str(), std::ios::in|std::ios::binary);
-  double val = 0.0;
 
   assert(ifs);
-
-  for (int i = 0; i < this->wordVector.cols(); ++i){
-    for (int j = 0; j < this->wordVector.rows(); ++j){
-      ifs.read((char*)&val, sizeof(double));
-      this->wordVector.coeffRef(j, i) = val;
-      Utils::infNan(val);
-    }
-  }
-
-  for (int i = 0; i < this->paragraphVector.cols(); ++i){
-    for (int j = 0; j < this->paragraphVector.rows(); ++j){
-      ifs.read((char*)&val, sizeof(double));
-      this->paragraphVector.coeffRef(j, i) = val;
-      Utils::infNan(val);
-    }
-  }
-
-  for (int i = 0; i < this->wordScoreVector.cols(); ++i){
-    for (int j = 0; j < this->wordScoreVector.rows(); ++j){
-      ifs.read((char*)&val, sizeof(double));
-      this->wordScoreVector.coeffRef(j, i) = val;
-      Utils::infNan(val);
-    }
-  }
+  Utils::load(ifs, this->wordVector);
+  Utils::load(ifs, this->paragraphVector);
+  Utils::load(ifs, this->wordScoreVector);
 }
 
 void Vocabulary::wordKnn(const int k){

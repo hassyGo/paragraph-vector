@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Matrix.hpp"
+#include <fstream>
 
 namespace Utils{
   inline bool isSpace(const char& c){
@@ -32,6 +33,30 @@ namespace Utils{
     return 1.0/(1.0+::exp(-x));
   }
 
+  inline void save(std::ofstream& ofs, const MatD& mat){
+    static double val;
+
+    for (int i = 0; i < mat.cols(); ++i){
+      for (int j = 0; j < mat.rows(); ++j){
+	val = mat.coeff(j, i);
+	Utils::infNan(val);
+	ofs.write((char*)&val, sizeof(double));
+      }
+    }
+  }
+
+  inline void load(std::ifstream& ifs, MatD& mat){
+    static double val;
+
+    for (int i = 0; i < mat.cols(); ++i){
+      for (int j = 0; j < mat.rows(); ++j){
+	ifs.read((char*)&val, sizeof(double));
+	mat.coeffRef(j, i) = val;
+	Utils::infNan(val);
+      }
+    }
+  }
+  
   inline void procArg(int argc, char** argv, int& wordVecDim, int& paragraphVecDim, int& contextSize, double& learningRate, int& numNegative, int& minFreq, int& iteration, std::string& input, std::string& output){
     for (int i = 1; i < argc; i+=2){
       std::string arg = (std::string)argv[i];
