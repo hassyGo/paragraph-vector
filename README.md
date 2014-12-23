@@ -24,5 +24,5 @@ result.bin<br>
 result.pv: each line has a paragraph ID and real values of its vector representation<br>
 result.wv: each line has a word and real values of its vector representation
 
-\<Reference\><br>
+## Reference ##
 Quoc Le, Tomas Mikolov. Distributed Representations of Sentences and Documents. 2014. Proceedings of the 31st International Conference on Machine Learning (ICML-14), pages 1188--1196.
