@@ -15,37 +15,27 @@ void Vocabulary::read(const std::string& documentFile, COUNT freqThreshold){
   std::unordered_map<std::string, INDEX> wordIndexTMP;
   std::vector<std::string> wordListTMP;
   std::vector<COUNT> wordCountTMP;
+  std::vector<std::string> token;
+  std::unordered_map<std::string, INDEX>::iterator it;
   COUNT unkCount = 0;
   INDEX paragraphIndex = 0;
 
-  assert(ifs);
+  assert("Input file not found error!" && ifs);
 
-  for (std::string line, token; std::getline(ifs, line);){
-    std::unordered_map<std::string, INDEX>::iterator it;
-    bool tok = false;
-    int beg = 0;
-
+  for (std::string line; std::getline(ifs, line);){
     ++paragraphIndex;
+    Utils::split(line, token);
 
-    for (int i = 0, len = line.length(); i < len; ++i){
-      if (!tok && !Utils::isSpace(line[i])){
-	beg = i;
-	tok = true;
-      }
-
-      if (tok && (i == len-1 || Utils::isSpace(line[i]))){
-	tok = false;
-	token = (i == len-1) ? line.substr(beg, i-beg+1) : line.substr(beg, i-beg);
-	it = wordIndexTMP.find(token);
+    for (int i = 0, size = token.size(); i < size; ++i){
+      it = wordIndexTMP.find(token[i]);
 	
-	if (it != wordIndexTMP.end()){
-	  wordCountTMP[it->second] += 1;
-	}
-	else {
-	  wordIndexTMP[token] = wordListTMP.size();
-	  wordListTMP.push_back(token);
-	  wordCountTMP.push_back(1);
-	}
+      if (it != wordIndexTMP.end()){
+	wordCountTMP[it->second] += 1;
+      }
+      else {
+	wordIndexTMP[token[i]] = wordListTMP.size();
+	wordListTMP.push_back(token[i]);
+	wordCountTMP.push_back(1);
       }
     }
   }
@@ -79,6 +69,7 @@ void Vocabulary::read(const std::string& documentFile, COUNT freqThreshold){
   std::unordered_map<std::string, INDEX>().swap(wordIndexTMP);
   std::vector<std::string>().swap(wordListTMP);
   std::vector<COUNT>().swap(wordCountTMP);
+  std::vector<std::string>().swap(token);
   
   this->unkIndex = this->wordList.size();
   this->nullIndex = this->unkIndex+1;
@@ -95,43 +86,38 @@ void Vocabulary::read(const std::string& documentFile, COUNT freqThreshold){
   std::cout << "Context size: " << this->contextLen << std::endl;
 }
 
-void Vocabulary::train(const std::string& documentFile, const double learningRate, const int numNegative){
+void Vocabulary::train(const std::string& documentFile, double& learningRate, const double shrink, const int numNegative){
   std::ifstream ifs(documentFile.c_str());
   INDEX paragraphIndex = 0;
+  std::vector<std::string> token;
+  std::unordered_map<std::string, INDEX>::iterator it;
+  std::vector<INDEX> paragraph;
 
-  for (std::string line, token; std::getline(ifs, line);){
-    std::vector<INDEX> paragraph;
-    std::unordered_map<std::string, INDEX>::iterator it;
-    bool tok = false;
-    int beg = 0;
-    
+  for (std::string line; std::getline(ifs, line);){
+    paragraph.clear();
+    Utils::split(line, token);
+
     for (int i = 0; i < this->contextLen; ++i){
       paragraph.push_back(this->nullIndex);
     }
     
-    for (int i = 0, len = line.length(); i < len; ++i){
-      if (!tok && !Utils::isSpace(line[i])){
-	beg = i;
-	tok = true;
+    for (int i = 0, size = token.size(); i < size; ++i){
+      it = this->wordIndex.find(token[i]);
+      
+      if (it == this->wordIndex.end()){
+	paragraph.push_back(this->unkIndex);
       }
-
-      if (tok && (i == len-1 || Utils::isSpace(line[i]))){
-	tok = false;
-	token = (i == len-1) ? line.substr(beg, i-beg+1) : line.substr(beg, i-beg);
-	it = this->wordIndex.find(token);
-	
-	if (it == this->wordIndex.end()){
-	  paragraph.push_back(this->unkIndex);
-	}
-	else {
-	  paragraph.push_back(it->second);
-	}
+      else {
+	paragraph.push_back(it->second);
       }
     }
     
     this->train(paragraphIndex++, paragraph, learningRate, numNegative);
-    std::vector<INDEX>().swap(paragraph);
+    learningRate -= shrink;
   }
+
+  std::vector<std::string>().swap(token);
+  std::vector<INDEX>().swap(paragraph);
 }
 
 void Vocabulary::train(const INDEX paragraphIndex, const std::vector<INDEX>& paragraph, const double learningRate, const int numNegative){

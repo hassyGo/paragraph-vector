@@ -28,7 +28,7 @@ public:
   std::vector<double> discardProb;
 
   void read(const std::string& documentFile, COUNT freqThreshold);
-  void train(const std::string& documentFile, const double learningRate, const int numNegative);
+  void train(const std::string& documentFile, double& learningRate, const double shirnk, const int numNegative);
   void outputParagraphVector(const std::string& fileName);
   void outputWordVector(const std::string& fileName);
   void save(const std::string& fileName);

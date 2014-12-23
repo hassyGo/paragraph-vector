@@ -9,6 +9,7 @@ int main(int argc, char** argv){
   int numNegative = 5;
   int minFreq = 10;
   int iteration = 1;
+  double shrink = 0.0;
   std::string input = "INPUT.txt";
   std::string output = "OUTPUT";
 
@@ -19,13 +20,15 @@ int main(int argc, char** argv){
   Vocabulary voc(wordVecDim, contextSize, paragraphVecDim);
 
   voc.read(input, minFreq);
+  shrink = learningRate/(iteration*voc.paragraphVector.cols());
 
   for (int i = 0; i < iteration; ++i){
-    printf("Iteration %2d\n", i+1);
-    voc.train(input, learningRate, numNegative);
+    printf("Iteration %2d (current learning rate: %f)\n", i+1, learningRate);
+    voc.train(input, learningRate, shrink, numNegative);
     voc.save(output+".bin");
   }
 
+  //voc.wordKnn(10);
   voc.outputParagraphVector(output+".pv");
   voc.outputWordVector(output+".wv");
 

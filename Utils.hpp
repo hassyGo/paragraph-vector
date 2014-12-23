@@ -8,6 +8,25 @@ namespace Utils{
     return (c == ' ' || c == '\t');
   }
   
+  inline void split(const std::string& str, std::vector<std::string>& res){
+    bool tok = false;
+    int beg = 0;
+
+    res.clear();
+
+    for (int i = 0, len = str.length(); i < len; ++i){
+      if (!tok && !Utils::isSpace(str[i])){
+	beg = i;
+	tok = true;
+      }
+
+      if (tok && (i == len-1 || Utils::isSpace(str[i]))){
+	tok = false;
+	res.push_back((i == len-1) ? str.substr(beg, i-beg+1) : str.substr(beg, i-beg));
+      }
+    }
+  }
+
   inline void infNan(const double& x){
     assert(!isnan(x) && !isinf(x));
   }
