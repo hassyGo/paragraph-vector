@@ -31,19 +31,6 @@ namespace Utils{
     assert(!isnan(x) && !isinf(x));
   }
 
-  inline unsigned long xor128(){
-    static unsigned long x = 123456789, y = 362436069, z = 521288629, w = 88675123; 
-    unsigned long t;
-    
-    t=(x^(x<<11));
-    x=y; y=z; z=w;
-    return (w=(w^(w>>19))^(t^(t>>8)));
-  }
-
-  inline double uniformRandom(){
-    return (Utils::xor128()&0xFFFF)/65536.0;
-  }
-  
   inline double cosDis(const MatD& a, const MatD& b){
     return a.col(0).dot(b.col(0))/(a.norm()*b.norm());
   }
@@ -76,7 +63,7 @@ namespace Utils{
     }
   }
   
-  inline void procArg(int argc, char** argv, int& wordVecDim, int& paragraphVecDim, int& contextSize, double& learningRate, int& numNegative, int& minFreq, int& iteration, std::string& input, std::string& output){
+  inline void procArg(int argc, char** argv, int& wordVecDim, int& paragraphVecDim, int& contextSize, double& learningRate, int& numNegative, int& minFreq, int& iteration, int& numThreads, std::string& input, std::string& output){
     for (int i = 1; i < argc; i+=2){
       std::string arg = (std::string)argv[i];
 
@@ -89,6 +76,7 @@ namespace Utils{
 	printf("-neg      the number of negative samples for negative sampling learning (default: 5)\n");
 	printf("-minfreq  the threshold to cut rare words (default: 10)\n");
 	printf("-itr      the number of iterations (default: 1)\n");
+	printf("-threads   the number of threads used (default: 1)\n");
 	printf("-input    the input file name (default: INPUT.txt)\n");
 	printf("-output   the output file name (default: OUTPUT)\n");
 	exit(1);
@@ -126,7 +114,12 @@ namespace Utils{
       else if (arg == "-itr"){
 	assert(i+1 < argc);
 	iteration = atoi(argv[i+1]);
-	assert(minFreq > 0);
+	assert(iteration > 0);
+      }
+      else if (arg == "-threads"){
+	assert(i+1 < argc);
+	numThreads = atoi(argv[i+1]);
+	assert(numThreads > 0);
       }
       else if (arg == "-input"){
 	assert(i+1 < argc);

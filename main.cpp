@@ -9,22 +9,24 @@ int main(int argc, char** argv){
   int numNegative = 5;
   int minFreq = 10;
   int iteration = 1;
+  int numThreads = 1;
   double shrink = 0.0;
   std::string input = "INPUT.txt";
   std::string output = "OUTPUT";
 
   Utils::procArg(argc, argv,
-		 wordVecDim, paragraphVecDim, contextSize, learningRate, numNegative, minFreq, iteration,
+		 wordVecDim, paragraphVecDim, contextSize, learningRate, numNegative, minFreq, iteration, numThreads,
 		 input, output);
 
   Vocabulary voc(wordVecDim, contextSize, paragraphVecDim);
 
   voc.read(input, minFreq);
-  shrink = learningRate/(iteration*voc.paragraphVector.cols());
+  shrink = learningRate/iteration;
 
   for (int i = 0; i < iteration; ++i){
     printf("Iteration %2d (current learning rate: %f)\n", i+1, learningRate);
-    voc.train(input, learningRate, shrink, numNegative);
+    voc.train(input, learningRate, shrink, numNegative, numThreads);
+    learningRate -= shrink;
     voc.save(output+".bin");
   }
 

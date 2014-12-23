@@ -1,4 +1,5 @@
 #include "Matrix.hpp"
+#include "Rand.hpp"
 #include <unordered_map>
 #include <vector>
 
@@ -28,7 +29,7 @@ public:
   std::vector<double> discardProb;
 
   void read(const std::string& documentFile, COUNT freqThreshold);
-  void train(const std::string& documentFile, double& learningRate, const double shirnk, const int numNegative);
+  void train(const std::string& documentFile, const double learningRate, const double shirnk, const int numNegative, const int numThreads);
   void outputParagraphVector(const std::string& fileName);
   void outputWordVector(const std::string& fileName);
   void save(const std::string& fileName);
@@ -36,5 +37,20 @@ public:
   void wordKnn(const int k);
 
 private:
-  void train(const INDEX paragraphIndex, const std::vector<INDEX>& paragraph, const double learningRate, const int numNegative);
+  void train(const INDEX paragraphIndex, const std::vector<INDEX>& paragraph, const double learningRate, const int numNegative, Rand& rnd);
+
+  class ThreadArg{
+  public:
+    ThreadArg(Vocabulary& voc): voc(voc){};
+
+    static std::string file;
+    static int numNegative;
+    Rand r;
+    INDEX beg, end;
+    double lr;
+    double shr;
+    Vocabulary& voc;
+
+    static void* threadFunc(void* arg);
+  };
 };

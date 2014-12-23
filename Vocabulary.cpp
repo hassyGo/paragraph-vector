@@ -2,6 +2,10 @@
 #include "Utils.hpp"
 #include <fstream>
 #include <iostream>
+#include <pthread.h>
+
+std::string Vocabulary::ThreadArg::file;
+int Vocabulary::ThreadArg::numNegative;
 
 Vocabulary::Vocabulary(const int wordVectorDim, const int contextLength, const int paragraphVectorDim):
   contextLen(contextLength),
@@ -86,41 +90,77 @@ void Vocabulary::read(const std::string& documentFile, COUNT freqThreshold){
   std::cout << "Context size: " << this->contextLen << std::endl;
 }
 
-void Vocabulary::train(const std::string& documentFile, double& learningRate, const double shrink, const int numNegative){
-  std::ifstream ifs(documentFile.c_str());
-  INDEX paragraphIndex = 0;
+void Vocabulary::train(const std::string& documentFile, const double learningRate, const double shrink, const int numNegative, const int numThreads){
+  static std::vector<Vocabulary::ThreadArg*> args;
+  static int step = this->paragraphVector.cols()/numThreads;
+  pthread_t pt[numThreads];
+
+  if (args.empty()){
+    Vocabulary::ThreadArg::file = documentFile;
+    Vocabulary::ThreadArg::numNegative = numNegative;
+
+    for (int i = 0; i < numThreads; ++i){
+      args.push_back(new Vocabulary::ThreadArg(*this));
+      args.back()->r = Rand(Rand::r_.next());
+    }
+  }
+
+  for (int i = 0; i < numThreads; ++i){
+    args[i]->beg = i*step;
+    args[i]->end = (i == numThreads-1 ? this->paragraphVector.cols()-1 : (i+1)*step-1);
+    args[i]->lr = learningRate;
+    args[i]->shr = shrink/(args[i]->end-args[i]->beg+1);
+    pthread_create(&pt[i], 0, Vocabulary::ThreadArg::threadFunc, (void*)args[i]);
+  }
+
+  for (int i = 0; i < numThreads; ++i){
+    pthread_join(pt[i], 0);
+  }
+}
+
+void* Vocabulary::ThreadArg::threadFunc(void* a){
+  Vocabulary::ThreadArg* arg = (Vocabulary::ThreadArg*)a;
+  std::ifstream ifs(Vocabulary::ThreadArg::file.c_str());
+  std::string line;
+
+  for (INDEX i = 0; i < arg->beg; ++i){
+    std::getline(ifs, line);
+  }
+
+  INDEX paragraphIndex = arg->beg;
   std::vector<std::string> token;
   std::unordered_map<std::string, INDEX>::iterator it;
   std::vector<INDEX> paragraph;
 
-  for (std::string line; std::getline(ifs, line);){
+  for (; std::getline(ifs, line) && paragraphIndex <= arg->end; ++paragraphIndex){
     paragraph.clear();
     Utils::split(line, token);
 
-    for (int i = 0; i < this->contextLen; ++i){
-      paragraph.push_back(this->nullIndex);
+    for (int i = 0; i < arg->voc.contextLen; ++i){
+      paragraph.push_back(arg->voc.nullIndex);
     }
     
     for (int i = 0, size = token.size(); i < size; ++i){
-      it = this->wordIndex.find(token[i]);
+      it = arg->voc.wordIndex.find(token[i]);
       
-      if (it == this->wordIndex.end()){
-	paragraph.push_back(this->unkIndex);
+      if (it == arg->voc.wordIndex.end()){
+	paragraph.push_back(arg->voc.unkIndex);
       }
       else {
 	paragraph.push_back(it->second);
       }
     }
     
-    this->train(paragraphIndex++, paragraph, learningRate, numNegative);
-    learningRate -= shrink;
+    arg->voc.train(paragraphIndex, paragraph, arg->lr, Vocabulary::ThreadArg::numNegative, arg->r);
+    arg->lr -= arg->shr;
   }
 
   std::vector<std::string>().swap(token);
   std::vector<INDEX>().swap(paragraph);
+  pthread_exit(0);
 }
 
-void Vocabulary::train(const INDEX paragraphIndex, const std::vector<INDEX>& paragraph, const double learningRate, const int numNegative){
+void Vocabulary::train(const INDEX paragraphIndex, const std::vector<INDEX>& paragraph, const double learningRate, const int numNegative, Rand& rnd){
   MatD gradContext(this->wordVecDim, this->contextLen);
   MatD gradPara(this->paragraphVecDim, 1);
   std::unordered_map<INDEX, int> negHist;
@@ -128,7 +168,7 @@ void Vocabulary::train(const INDEX paragraphIndex, const std::vector<INDEX>& par
   INDEX neg;
 
   for (int i = this->contextLen, size = paragraph.size(); i < size; ++i){
-    if (paragraph[i] == this->unkIndex || this->discardProb[paragraph[i]] > Utils::uniformRandom()){
+    if (paragraph[i] == this->unkIndex || this->discardProb[paragraph[i]] > rnd.zero2one()){
       continue;
     }
     
@@ -159,7 +199,7 @@ void Vocabulary::train(const INDEX paragraphIndex, const std::vector<INDEX>& par
       neg = paragraph[i];
 
       while (neg == paragraph[i] || negHist.count(neg)){
-	neg = this->noiseDistribution[Utils::xor128()%this->noiseDistribution.size()];
+	neg = this->noiseDistribution[rnd.next()%this->noiseDistribution.size()];
       }
 
       negHist[neg] = 1;
