@@ -27,12 +27,12 @@ int main(int argc, char** argv){
     printf("Iteration %2d (current learning rate: %f)\n", i+1, learningRate);
     voc.train(input, learningRate, shrink, numNegative, numThreads);
     learningRate -= shrink;
-    voc.save(output+".bin");
   }
 
+  voc.save(output+".bin");
   //voc.wordKnn(10);
-  voc.outputParagraphVector(output+".pv");
-  voc.outputWordVector(output+".wv");
+  //voc.outputParagraphVector(output+".pv");
+  //voc.outputWordVector(output+".wv");
 
   return 0;
 }

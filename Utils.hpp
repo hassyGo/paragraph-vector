@@ -76,7 +76,7 @@ namespace Utils{
 	printf("-neg      the number of negative samples for negative sampling learning (default: 5)\n");
 	printf("-minfreq  the threshold to cut rare words (default: 10)\n");
 	printf("-itr      the number of iterations (default: 1)\n");
-	printf("-threads   the number of threads used (default: 1)\n");
+	printf("-threads  the number of threads used (default: 1)\n");
 	printf("-input    the input file name (default: INPUT.txt)\n");
 	printf("-output   the output file name (default: OUTPUT)\n");
 	exit(1);

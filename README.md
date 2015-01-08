@@ -7,7 +7,8 @@ An online demo is available at: http://www.logos.t.u-tokyo.ac.jp/~hassy/implemen
 
 ## ToDo ##
 
-* speedup the code
+* speedup the code<br>
+* make it possible to train unknown paragraphs, such as paragprahs in test data
 
 ## USAGE ##
 1) modify the line in Makefile to use Eigen<br>
