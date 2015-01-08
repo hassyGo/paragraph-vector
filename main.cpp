@@ -31,8 +31,8 @@ int main(int argc, char** argv){
 
   voc.save(output+".bin");
   //voc.wordKnn(10);
-  //voc.outputParagraphVector(output+".pv");
-  //voc.outputWordVector(output+".wv");
+  voc.outputParagraphVector(output+".pv");
+  voc.outputWordVector(output+".wv");
 
   return 0;
 }
